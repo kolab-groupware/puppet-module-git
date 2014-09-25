@@ -17,7 +17,7 @@ class git {
         ]
     }
 
-    class client {
+    class client inherits git {
 
         #
         # Documentation on this class
@@ -32,7 +32,7 @@ class git {
         }
     }
 
-    class server inherits client {
+    class server inherits git::client {
 
         #
         # Documentation on this class
