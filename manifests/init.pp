@@ -6,15 +6,17 @@
 #
 
 class git {
-    @file { "/usr/local/bin/git_init_script":
-        owner => "root",
-        group => "root",
-        mode => "750",
-        source => [
-            "puppet://$server/private/$environment/git/git_init_script",
-            "puppet://$server/modules/files/git/git_init_script",
-            "puppet://$server/modules/git/git_init_script"
-        ]
+    if (!defined(File["/usr/local/bin/git_init_script"])) {
+        @file { "/usr/local/bin/git_init_script":
+            owner => "root",
+            group => "root",
+            mode => 750,
+            source => [
+                "puppet://$server/private/$environment/git/git_init_script",
+                "puppet://$server/modules/files/git/git_init_script",
+                "puppet://$server/modules/git/git_init_script"
+            ]
+        }
     }
 
     class client inherits git {
@@ -399,6 +401,7 @@ class git {
                 excluded => true
             }
         }
+
     }
 
     define pull($localtree = "/srv/git/", $real_name = false,
@@ -468,6 +471,13 @@ class git {
         }
         else {
             $_name = $name
+        }
+
+        exec { "git_reset_remote_$localtree/$_name":
+            cwd => "$localtree/$_name",
+            require => File["$localtree"],
+            command => "git remote set-url origin $source",
+            unless => "[ \"\$(git config --get remote.origin)\" == "$source" ]"
         }
 
         exec { "git_clone_exec_$localtree/$_name":
