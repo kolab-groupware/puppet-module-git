@@ -477,7 +477,7 @@ class git {
             cwd => "$localtree/$_name",
             require => File["$localtree"],
             command => "git remote set-url origin $source",
-            unless => "[ \"\$(git config --get remote.origin)\" == "$source" ]"
+            unless => "[ \"\$(git config --get remote.origin)\" == \"$source\" ]"
         }
 
         exec { "git_clone_exec_$localtree/$_name":
